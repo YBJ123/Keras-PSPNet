@@ -14,6 +14,7 @@ ckpt
 
 # Keras models
 *.h5
+*.hdf5
 *.json
 
 # Numpy weights
