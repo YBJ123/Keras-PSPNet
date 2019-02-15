@@ -95,7 +95,7 @@ def residual_short(prev_layer, level, pad=1, lvl=1, sub_lvl=1, modify_stride=Fal
     added = Add()([block_1, block_2])
     return added
 
-# 直接与捷径(输入)，进行残差连接的模块
+# 直接与捷径(输入)进行残差连接的模块
 def residual_empty(prev_layer, level, pad=1, lvl=1, sub_lvl=1):
     prev_layer = Activation('relu')(prev_layer)
     # 卷积
