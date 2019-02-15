@@ -1,3 +1,16 @@
+# Keras models
+*.h5
+*.hdf5
+*.json
+
+# Numpy weights
+*.npy
+
+# spicific file
+model_None.py
+predict_None.py
+test_names.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -11,14 +24,6 @@ video_test*.py
 *.swp
 data
 ckpt
-
-# Keras models
-*.h5
-*.hdf5
-*.json
-
-# Numpy weights
-*.npy
 
 # C extensions
 *.so
