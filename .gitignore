@@ -8,6 +8,7 @@
 
 # spicific file
 model_None.py
+model.py
 predict_None.py
 test_names.txt
 
