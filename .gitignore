@@ -11,6 +11,10 @@ model_None.py
 predict_None.py
 test_names.txt
 
+# specify folders
+test_report/
+Test_results_old/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
