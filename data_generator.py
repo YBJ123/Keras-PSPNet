@@ -33,6 +33,7 @@ class DataGenSequence(Sequence):
         batch_y = np.empty((length, img_rows, img_cols, num_classes), dtype=np.uint8)
 
         for i_batch in range(length):
+            """normal
             img_name = self.names[i] # xx.jpg
             img_name_prefix,useless = os.path.splitext(img_name)
             mask_name = img_name_prefix+'.png'
@@ -41,6 +42,19 @@ class DataGenSequence(Sequence):
             image = cv2.imread(image_path,1)
             mask_path = os.path.join(mask_img_path, mask_name)
             mask = cv2.imread(image_path,0)
+            """
+
+            """temp"""
+            img_name = self.names[i] # xx.jpg
+            img_prefix = img_name.split('split')[0][0:-1]
+            mask_name = img_name_prefix+'.png'
+
+            image_path = os.path.join(rgb_image_path, img_name)
+            image = cv2.imread(image_path,1)
+            mask_path = os.path.join(mask_img_path, mask_name)
+            mask = cv2.imread(image_path,0)
+            mask = (mask!=0)*255
+            """temp"""
 
             # 实时处理alpha，得到trimap:128/0/255
             trimap = generate_random_trimap(mask) 

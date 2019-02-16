@@ -1,4 +1,3 @@
-
 import keras
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
@@ -18,8 +17,8 @@ if __name__ == '__main__':
     #os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
     # Set model save path
-    model_dir = 'pspnet50_512x512_20190214'
-    checkpoint_models_path = os.path.join(checkpoint_models_path_base,model_dir)
+    model_dir = 'pspnet50_512x512_20190214/'
+    checkpoint_models_path = checkpoint_models_path_base + '/' + model_dir
     if not os.path.exists(checkpoint_models_path):
         os.makedirs(checkpoint_models_path)
    
@@ -40,7 +39,8 @@ if __name__ == '__main__':
             self.model_to_save.save(fmt % (epoch, logs['val_loss']))
 
     # Set pretrained model path
-    pretrained_path = "pspnet50_ade20k" 
+    #pretrained_path = "pspnet50_ade20k" 
+    pretrained_path = 'models/pspnet50_model_20190214.22-0.2034.hdf5'
 
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
@@ -48,7 +48,8 @@ if __name__ == '__main__':
         with tf.device("/cpu:0"):
             pspnet50_model = build_pspnet(num_classes, resnet_layers=50, input_shape=(img_rows,img_cols))
             if pretrained_path is not None:
-                set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
+                #set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
+                pspnet50_model.load(pretrained_path)
             else:
                 pass
         final = multi_gpu_model(pspnet50_model, gpus=num_gpu)
@@ -57,7 +58,8 @@ if __name__ == '__main__':
     else:
         pspnet50_model = build_pspnet(num_classes, resnet_layers=50, input_shape=(img_rows,img_cols))
         if pretrained_path is not None:
-            set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
+            #set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
+            pspnet50_model.load(pretrained_path)
         else:
             pass
         final = pspnet50_model
