@@ -34,7 +34,8 @@ class CustomizeModelCheckpoint(keras.callbacks.Callback):
     def __init__(self, specific_model, filepath, monitor='val_loss', verbose=0,
                  save_best_only=False, save_weights_only=False,
                  mode='auto', period=1):
-        super(ModelCheckpoint, self).__init__()
+        # super(ModelCheckpoint, self).__init__()
+        super(CustomizeModelCheckpoint, self).__init__()
         # add this
         self.specific_model = specific_model
 
