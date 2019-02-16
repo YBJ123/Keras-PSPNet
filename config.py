@@ -8,7 +8,7 @@ num_classes = 3
 num_train_samples = 8835
 # 验证集占总数据集的20%         
 num_valid_samples = 2209          
-batch_size = 4
+batch_size = 8
 epochs = 100
 patience = 10
 
