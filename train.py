@@ -49,7 +49,7 @@ if __name__ == '__main__':
             pspnet50_model = build_pspnet(num_classes, resnet_layers=50, input_shape=(img_rows,img_cols))
             if pretrained_path is not None:
                 #set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
-                pspnet50_model.load(pretrained_path)
+                pspnet50_model.load_weights(pretrained_path)
             else:
                 pass
         final = multi_gpu_model(pspnet50_model, gpus=num_gpu)
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         pspnet50_model = build_pspnet(num_classes, resnet_layers=50, input_shape=(img_rows,img_cols))
         if pretrained_path is not None:
             #set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
-            pspnet50_model.load(pretrained_path)
+            pspnet50_model.load_weights(pretrained_path)
         else:
             pass
         final = pspnet50_model
