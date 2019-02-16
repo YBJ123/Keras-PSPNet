@@ -46,7 +46,7 @@ class DataGenSequence(Sequence):
 
             """temp"""
             img_name = self.names[i] # xx.jpg
-            img_prefix = img_name.split('split')[0][0:-1]
+            img_name_prefix = img_name.split('split')[0][0:-1]
             mask_name = img_name_prefix+'.png'
 
             image_path = os.path.join(rgb_image_path, img_name)
