@@ -8,7 +8,7 @@ import numpy as np
 from keras.utils import Sequence
 
 from config import img_rows, img_cols, batch_size, num_classes,rgb_image_path, mask_img_path,unknown_code
-from utils import generate_random_trimap, random_choice, safe_crop, make_trimap_for_batch_y
+from utils import generate_random_trimap, random_choice, safe_crop, make_trimap_for_batch_y,random_rescale_image_and_mask
 
 class DataGenSequence(Sequence):
     def __init__(self, usage):
@@ -33,7 +33,7 @@ class DataGenSequence(Sequence):
         batch_y = np.empty((length, img_rows, img_cols, num_classes), dtype=np.uint8)
 
         for i_batch in range(length):
-            """normal
+            ###normal
             img_name = self.names[i] # xx.jpg
             img_name_prefix,useless = os.path.splitext(img_name)
             mask_name = img_name_prefix+'.png'
@@ -41,23 +41,25 @@ class DataGenSequence(Sequence):
             image_path = os.path.join(rgb_image_path, img_name)
             image = cv2.imread(image_path,1)
             mask_path = os.path.join(mask_img_path, mask_name)
-            mask = cv2.imread(image_path,0)
-            """
+            mask = cv2.imread(mask_path,0)
 
-            """temp"""
-            img_name = self.names[i] # xx.jpg
-            img_name_prefix = img_name.split('split')[0][0:-1]
-            mask_name = img_name_prefix+'.png'
+            ###temp
+            # img_name = self.names[i] # xx.jpg
+            # image_path = os.path.join(rgb_image_path, img_name)
+            # image = cv2.imread(image_path,1)
 
-            image_path = os.path.join(rgb_image_path, img_name)
-            image = cv2.imread(image_path,1)
-            mask_path = os.path.join(mask_img_path, mask_name)
-            mask = cv2.imread(image_path,0)
-            mask = (mask!=0)*255
-            """temp"""
+            # img_name_prefix = img_name.split('split')[0][0:-1]
+            # mask_name = img_name_prefix+'.png'
+            # mask_path = os.path.join(mask_img_path, mask_name)
+            # mask = cv2.imread(mask_path,0)
+            ##mask = (mask!=0)*255
+
+            # 随机缩放image和mask，0.5~2.0
+            image,mask = random_rescale_image_and_mask(image,mask)
 
             # 实时处理alpha，得到trimap:128/0/255
-            trimap = generate_random_trimap(mask) 
+            trimap = generate_random_trimap(mask)
+
             # 定义随机剪裁尺寸
             crop_size = (512,512)
             # 获得剪裁的起始点，其目的是为了保证剪裁的图像中包含未知像素
@@ -71,6 +73,13 @@ class DataGenSequence(Sequence):
             if np.random.random_sample() > 0.5:
                 image = np.fliplr(image)
                 trimap = np.fliplr(trimap)
+
+            ### save the image/trimap crop patch
+            # patch_save_dir = "show_data_loader"
+            # image_patch_path = "show_data_loader" + '/' + img_name_prefix + '_image_' + str(i_batch) + '.png'
+            # trimap_patch_path = "show_data_loader" + '/' + img_name_prefix + '_trimap_' + str(i_batch) + '.png'
+            # cv2.imwrite(image_patch_path,image)
+            # cv2.imwrite(trimap_patch_path,trimap)
 
             batch_x[i_batch] = image/255.0
             batch_y[i_batch] = make_trimap_for_batch_y(trimap) 

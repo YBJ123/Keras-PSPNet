@@ -7,12 +7,14 @@ import keras.backend as K
 from keras.utils import to_categorical
 
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import gridspec
-from matplotlib.lines import Line2D
 from tensorflow.python.client import device_lib
 
-from config import num_classes, rgb_image_path, mask_img_path,img_rows, img_cols,unknown_code
+from config import num_classes, rgb_image_path, mask_img_path,img_rows, img_cols,unknown_code,min_scale,max_scale
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
 
 def set_npy_weights(weights_path, model):
     npy_weights_path = os.path.join("pretrained_weights", "npy", weights_path + ".npy")
@@ -69,6 +71,23 @@ def plot_training(history,pic_name='train_val_loss.png'):
     plt.ylabel("Loss/Acc")
     plt.legend(loc="upper left")
     plt.savefig(pic_name)
+
+def random_rescale_image_and_mask(image,mask,min_scale = min_scale, max_scale = max_scale):
+    rows = image.shape[0]
+    cols = image.shape[1]
+    # print("image.shape:{}".format(image.shape))
+    # print("mask.shape:{}".format(mask.shape))
+    # print("rows:{},cols:{}".format(rows,cols))
+    ratio = random.uniform(min_scale,max_scale)
+    # print("ratio:{}".format(ratio))
+    new_rows = int(ratio*rows)
+    new_cols = int(ratio*cols)
+    # print("new_rows:{},new_cols:{}".format(new_rows,new_cols))
+    image = cv2.resize(image, dsize=(new_cols, new_rows), interpolation=cv2.INTER_LINEAR)
+    mask = cv2.resize(mask, dsize=(new_cols, new_rows), interpolation=cv2.INTER_LINEAR)
+    # print("image.shape:{}".format(image.shape))
+    # print("mask.shape:{}".format(mask.shape))
+    return image,mask
 
 def generate_random_trimap(alpha):
     ### 非0区域置为255，然后膨胀及收缩，多出的部分为128区域
@@ -145,7 +164,9 @@ def safe_crop(mat, x, y, crop_size=(img_rows, img_cols)):
     # 缩放到(img_rows,img_cols)，即(320,320)
     if crop_size != (img_rows, img_cols):
         # dsize即指的是Size(width，height)
+        print("crop_size != (512,512)")
         ret = cv2.resize(ret, dsize=(img_rows, img_cols), interpolation=cv2.INTER_NEAREST)
+
     return ret
 
 def make_trimap_for_batch_y(trimap):
@@ -218,9 +239,19 @@ def vis_segmentation(image, seg_map, save_path_name = "examples.png"):
   plt.close('all')
   
 if __name__ == '__main__':
-    # test generator_random_trimap()
-    img_mask = cv.imread('trimap_test_out/supervisely4847.png',0) 
-    i = 0
-    for i in list(range(10)):
-        generator_random_trimap(img_mask,i)
+    ### test generator_random_trimap()
+    # img_mask = cv.imread('trimap_test_out/supervisely4847.png',0) 
+    # i = 0
+    # for i in list(range(10)):
+    #     generator_random_trimap(img_mask,i)
+
+    ### test random_rescale_image_and_mask()
+    image  = cv2.imread("./temp/image/supervisely5641.jpg",1)
+    mask  = cv2.imread("./temp/mask/supervisely5641.png",0)
+    image,mask = random_rescale_image_and_mask(image,mask)
+    cv2.imwrite("./temp/image/image_new.png",image)
+    cv2.imwrite("./temp/mask/mask_new.png",mask)
+
+
+
 

@@ -17,11 +17,11 @@ if __name__ == '__main__':
     #os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
     # Set model save path
-    model_dir = 'pspnet50_512x512_20190214/'
+    model_dir = 'pspnet50_512x512_20190220_supervisely/'
     checkpoint_models_path = checkpoint_models_path_base + '/' + model_dir
     if not os.path.exists(checkpoint_models_path):
         os.makedirs(checkpoint_models_path)
-   
+    
     # Callbacks
     tensor_board = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
     model_save_path = checkpoint_models_path + 'pspnet50.{epoch:02d}-{val_loss:.4f}.hdf5'
@@ -29,18 +29,9 @@ if __name__ == '__main__':
     early_stop = EarlyStopping('val_loss', patience=patience)
     reduce_lr = ReduceLROnPlateau('val_loss', factor=0.1, patience=int(patience / 2), verbose=1)
 
-    class MyCbk(keras.callbacks.Callback):
-        def __init__(self, model):
-            keras.callbacks.Callback.__init__(self)
-            self.model_to_save = model
-
-        def on_epoch_end(self, epoch, logs=None):
-            fmt = checkpoint_models_path + 'model.%02d-%.4f.hdf5'
-            self.model_to_save.save(fmt % (epoch, logs['val_loss']))
-
     # Set pretrained model path
-    #pretrained_path = "pspnet50_ade20k" 
-    pretrained_path = 'models/pspnet50_model_20190214.22-0.2034.hdf5'
+    pretrained_path = "pspnet50_ade20k" 
+    #pretrained_path = 'models/pspnet50_512x512_20190214/pspnet50_model_20190214.22-0.2034.hdf5'
 
     # Load our model, added support for Multi-GPUs
     num_gpu = len(get_available_gpus())
@@ -48,8 +39,8 @@ if __name__ == '__main__':
         with tf.device("/cpu:0"):
             pspnet50_model = build_pspnet(num_classes, resnet_layers=50, input_shape=(img_rows,img_cols))
             if pretrained_path is not None:
-                #set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
-                pspnet50_model.load_weights(pretrained_path)
+                set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
+                #pspnet50_model.load_weights(pretrained_path)
             else:
                 pass
         final = multi_gpu_model(pspnet50_model, gpus=num_gpu)
@@ -58,8 +49,8 @@ if __name__ == '__main__':
     else:
         pspnet50_model = build_pspnet(num_classes, resnet_layers=50, input_shape=(img_rows,img_cols))
         if pretrained_path is not None:
-            #set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
-            pspnet50_model.load_weights(pretrained_path)
+            set_npy_weights(weights_path=pretrained_path, model = pspnet50_model)
+            #pspnet50_model.load_weights(pretrained_path)
         else:
             pass
         final = pspnet50_model
